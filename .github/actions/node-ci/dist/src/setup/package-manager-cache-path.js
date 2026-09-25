@@ -28,7 +28,8 @@ export async function resolvePackageManagerCachePath(plan, preparedEnvironment, 
             const globalCache = await runner('yarn config get enableGlobalCache', plan, preparedEnvironment);
             if (globalCache.status !== 'PASSED')
                 return failed('yarn config get enableGlobalCache', globalCache);
-            const enabled = globalCache.stdout.trim().toLowerCase();
+            // Yarn may color config output when run in an interactive CI terminal.
+            const enabled = stripAnsi(globalCache.stdout).trim().toLowerCase();
             if (enabled === 'true') {
                 const globalFolder = await runner('yarn config get globalFolder', plan, preparedEnvironment);
                 if (globalFolder.status !== 'PASSED')
@@ -81,6 +82,10 @@ export async function resolvePackageManagerCachePath(plan, preparedEnvironment, 
 function containsPath(parent, child) {
     const childRelative = relative(parent, child);
     return childRelative === '' || (!childRelative.startsWith(`..${sep}`) && childRelative !== '..');
+}
+function stripAnsi(value) {
+    const controlSequence = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g');
+    return value.replace(controlSequence, '');
 }
 function failed(command, result) {
     const error = result.error?.message;

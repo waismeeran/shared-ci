@@ -48,7 +48,8 @@ export async function resolvePackageManagerCachePath(
       );
       if (globalCache.status !== 'PASSED')
         return failed('yarn config get enableGlobalCache', globalCache);
-      const enabled = globalCache.stdout.trim().toLowerCase();
+      // Yarn may color config output when run in an interactive CI terminal.
+      const enabled = stripAnsi(globalCache.stdout).trim().toLowerCase();
       if (enabled === 'true') {
         const globalFolder = await runner(
           'yarn config get globalFolder',
@@ -108,6 +109,11 @@ export async function resolvePackageManagerCachePath(
 function containsPath(parent: string, child: string): boolean {
   const childRelative = relative(parent, child);
   return childRelative === '' || (!childRelative.startsWith(`..${sep}`) && childRelative !== '..');
+}
+
+function stripAnsi(value: string): string {
+  const controlSequence = new RegExp(`${String.fromCharCode(27)}\\[[0-?]*[ -/]*[@-~]`, 'g');
+  return value.replace(controlSequence, '');
 }
 
 function failed(command: string, result: CommandExecutionResult): CachePathResolution {

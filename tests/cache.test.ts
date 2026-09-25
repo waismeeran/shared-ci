@@ -190,6 +190,16 @@ describe('manager-specific cache path discovery', () => {
     ).toContainEqual(['config', 'get', 'cacheFolder']);
   });
 
+  it('accepts ANSI-colored Yarn global cache configuration output', async () => {
+    const { tools, setup, preparation } = await preparedManager('yarn');
+    const result = await resolvePackageManagerCachePath(setup, {
+      ...tools.env,
+      ...preparation.environment,
+      FAKE_YARN_ENABLE_GLOBAL_CACHE: '\u001b[33mtrue\u001b[39m',
+    });
+    expect(result).toEqual({ ok: true, path: resolve(tools.root, 'yarn-global/cache') });
+  });
+
   it('rejects manager cache locations inside node_modules', async () => {
     const { tools, setup, preparation } = await preparedManager('pnpm');
     const result = await resolvePackageManagerCachePath(setup, {
