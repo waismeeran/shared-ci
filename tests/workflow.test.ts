@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
-import { toCiConfig } from '../src/workflow/inputs.js';
+import { readActionInputs, toCiConfig } from '../src/workflow/inputs.js';
 import { validateConfig } from '../src/config/validation.js';
 
 const workflowPath = new URL('../.github/workflows/node-ci.yml', import.meta.url);
@@ -24,6 +24,29 @@ describe('workflow input adapter', () => {
       'build-command': undefined,
       'e2e-command': undefined,
     });
+  });
+
+  it('reads GitHub action input variables while preserving hyphens in input names', () => {
+    expect(
+      readActionInputs({
+        'INPUT_NODE-VERSION': '24',
+        'INPUT_PACKAGE-MANAGER': 'pnpm',
+        'INPUT_WORKING-DIRECTORY': 'apps/site',
+        'INPUT_LINT-COMMAND': 'pnpm lint:ci',
+      }),
+    ).toMatchObject({
+      'node-version': '24',
+      'package-manager': 'pnpm',
+      'working-directory': 'apps/site',
+      'lint-command': 'pnpm lint:ci',
+    });
+  });
+
+  it('canonicalizes omitted and empty working-directory inputs to root while preserving explicit paths', () => {
+    expect(toCiConfig({})['working-directory']).toBe('.');
+    expect(toCiConfig({ 'working-directory': '' })['working-directory']).toBe('.');
+    expect(toCiConfig({ 'working-directory': '.' })['working-directory']).toBe('.');
+    expect(toCiConfig({ 'working-directory': 'app' })['working-directory']).toBe('app');
   });
 
   it('preserves explicit environment values, modes, and commands', () => {

@@ -23,7 +23,7 @@ import {
   renderDiagnosticAnnotation,
   renderCiSummaryMarkdown,
 } from '../src/index.js';
-import { toCiConfig } from '../src/workflow/inputs.js';
+import { readActionInputs, toCiConfig } from '../src/workflow/inputs.js';
 import type { Diagnostic, ResolvedCiPlan } from '../src/config/types.js';
 import type { SetupPlan } from '../src/setup/types.js';
 import type { SetupReportState, CiActionState } from '../src/reporting/types.js';
@@ -31,23 +31,6 @@ import { createCiActionState } from '../src/reporting/summary-model.js';
 import { writeGithubStepSummary } from '../src/reporting/github-summary.js';
 import { readActionState, writeActionState } from './action-state.js';
 
-const inputNames = [
-  'node-version',
-  'package-manager',
-  'working-directory',
-  'lint',
-  'typecheck',
-  'unit',
-  'integration',
-  'build',
-  'e2e',
-  'lint-command',
-  'typecheck-command',
-  'unit-command',
-  'integration-command',
-  'build-command',
-  'e2e-command',
-] as const;
 const runnerTemp = process.env.RUNNER_TEMP ?? tmpdir();
 const planPath = join(runnerTemp, 'shared-ci-plan.json');
 const statePath = join(runnerTemp, 'shared-ci-action-state.json');
@@ -70,12 +53,7 @@ async function main(): Promise<void> {
 }
 
 async function preflight(): Promise<void> {
-  const inputs = Object.fromEntries(
-    inputNames.map((name) => [
-      name,
-      process.env[`INPUT_${name.toUpperCase().replaceAll('-', '_')}`] ?? '',
-    ]),
-  );
+  const inputs = readActionInputs(process.env);
   const config = toCiConfig(inputs);
   const workspace = resolve(process.env.GITHUB_WORKSPACE ?? process.cwd());
   const resolution = await inspectProject(workspace, config);
