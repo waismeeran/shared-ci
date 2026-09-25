@@ -1,0 +1,13 @@
+{
+  "name": "fixture-npm-full",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "node check.mjs lint",
+    "typecheck": "node check.mjs typecheck",
+    "test:unit": "node check.mjs unit",
+    "test:integration": "node check.mjs integration",
+    "build": "node check.mjs build",
+    "test:e2e": "node check.mjs e2e"
+  }
+}

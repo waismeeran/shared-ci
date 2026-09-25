@@ -1,0 +1,61 @@
+name: Shared CI Node setup
+description: Resolve a caller project and install dependencies using Shared CI's existing TypeScript core.
+inputs:
+  phase:
+    description: preflight, prepare, install, capabilities, or finalize
+    required: true
+  node-version:
+    description: Node selector emitted by preflight
+    required: false
+  package-manager:
+    description: Package manager input
+    required: false
+  working-directory:
+    description: Project root relative to the caller checkout
+    required: false
+  lint:
+    description: Lint capability mode
+    required: false
+  typecheck:
+    description: Typecheck capability mode
+    required: false
+  unit:
+    description: Unit capability mode
+    required: false
+  integration:
+    description: Integration capability mode
+    required: false
+  build:
+    description: Build capability mode
+    required: false
+  e2e:
+    description: E2E capability mode
+    required: false
+  lint-command:
+    description: Optional lint command override
+    required: false
+  typecheck-command:
+    description: Optional typecheck command override
+    required: false
+  unit-command:
+    description: Optional unit command override
+    required: false
+  integration-command:
+    description: Optional integration command override
+    required: false
+  build-command:
+    description: Optional build command override
+    required: false
+  e2e-command:
+    description: Optional E2E command override
+    required: false
+outputs:
+  cache-enabled:
+    description: Whether a safe package-manager cache plan was produced.
+  cache-path:
+    description: Manager-specific package cache directory.
+  cache-key:
+    description: Deterministic cache identity derived from manager and lockfile.
+runs:
+  using: node24
+  main: dist/scripts/node-ci-action.js

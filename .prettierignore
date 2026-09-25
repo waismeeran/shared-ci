@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+dist/
+package-lock.json
+docs/research/
+fixtures/invalid-package-json/package.json

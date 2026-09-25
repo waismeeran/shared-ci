@@ -1,0 +1,10 @@
+{
+  "name": "fixture-nested-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "node check.mjs",
+    "test:unit": "node check.mjs",
+    "build": "node check.mjs"
+  }
+}

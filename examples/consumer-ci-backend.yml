@@ -1,0 +1,18 @@
+# Shared CI runs the integration command; the consumer owns required services.
+name: Backend CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      lint: 'true'
+      typecheck: 'true'
+      unit: 'true'
+      integration: 'true'
+      build: 'true'

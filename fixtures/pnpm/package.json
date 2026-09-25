@@ -1,0 +1,7 @@
+{
+  "name": "fixture-pnpm",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "node build.js"
+  }
+}

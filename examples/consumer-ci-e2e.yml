@@ -1,0 +1,18 @@
+# Placeholder consumer examples; replace OWNER with the Shared CI repository owner.
+name: Consumer CI with E2E
+
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e-convention:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      e2e: 'true'
+      # Requires package.json to define test:e2e.
+
+  e2e-custom-command:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      e2e: 'true'
+      e2e-command: npm run browser-tests

@@ -1,0 +1,10 @@
+{
+  "name": "fixture-custom-commands",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "check:lint": "node legacy.mjs lint",
+    "tests": "node legacy.mjs tests",
+    "compile:production": "node legacy.mjs compile:production"
+  }
+}

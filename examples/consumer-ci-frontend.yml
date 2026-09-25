@@ -1,0 +1,17 @@
+# Generic frontend call. React, Next.js and Vite need no framework detection.
+name: Frontend CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      lint: 'true'
+      typecheck: 'true'
+      unit: 'true'
+      build: 'true'

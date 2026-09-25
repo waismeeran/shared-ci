@@ -1,0 +1,6 @@
+{
+  "name": "fixture-disabled-capability",
+  "scripts": {
+    "lint": "eslint ."
+  }
+}

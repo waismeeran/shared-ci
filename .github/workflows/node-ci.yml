@@ -1,0 +1,145 @@
+name: Shared CI Node
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: auto
+      package-manager:
+        type: string
+        default: auto
+      working-directory:
+        type: string
+        default: .
+      lint:
+        type: string
+        default: auto
+      typecheck:
+        type: string
+        default: auto
+      unit:
+        type: string
+        default: auto
+      integration:
+        type: string
+        default: auto
+      build:
+        type: string
+        default: auto
+      e2e:
+        type: string
+        default: 'false'
+      lint-command:
+        type: string
+        default: ''
+      typecheck-command:
+        type: string
+        default: ''
+      unit-command:
+        type: string
+        default: ''
+      integration-command:
+        type: string
+        default: ''
+      build-command:
+        type: string
+        default: ''
+      e2e-command:
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      # v7.0.1; verifies to actions/checkout commit 3d3c42e5aac5ba805825da76410c181273ba90b1.
+      - name: Checkout caller repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # $/ resolves the action from the reusable-workflow repository at its exact running commit.
+      - name: Resolve project configuration
+        id: preflight
+        uses: $/.github/actions/node-ci
+        with:
+          phase: preflight
+          node-version: ${{ inputs.node-version }}
+          package-manager: ${{ inputs.package-manager }}
+          working-directory: ${{ inputs.working-directory }}
+          lint: ${{ inputs.lint }}
+          typecheck: ${{ inputs.typecheck }}
+          unit: ${{ inputs.unit }}
+          integration: ${{ inputs.integration }}
+          build: ${{ inputs.build }}
+          e2e: ${{ inputs.e2e }}
+          lint-command: ${{ inputs.lint-command }}
+          typecheck-command: ${{ inputs.typecheck-command }}
+          unit-command: ${{ inputs.unit-command }}
+          integration-command: ${{ inputs.integration-command }}
+          build-command: ${{ inputs.build-command }}
+          e2e-command: ${{ inputs.e2e-command }}
+
+      # v7.0.0; verified against actions/setup-node's signed release commit.
+      - name: Set up resolved Node
+        id: setup_node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ steps.preflight.outputs.node-version }}
+          package-manager-cache: false
+
+      - name: Prepare package manager and resolve package cache
+        id: pm_prepare
+        uses: $/.github/actions/node-ci
+        with:
+          phase: prepare
+
+      # v6.1.0; immutable pin for the current actions/cache release.
+      - name: Restore package-manager cache
+        id: pm_cache_restore
+        if: ${{ steps.pm_prepare.outcome == 'success' && steps.pm_prepare.outputs.cache-enabled == 'true' }}
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pm_prepare.outputs.cache-path }}
+          key: ${{ steps.pm_prepare.outputs.cache-key }}
+
+      - name: Immutable dependency installation
+        id: pm_install
+        uses: $/.github/actions/node-ci
+        env:
+          SHARED_CI_CACHE_RESTORE_OUTCOME: ${{ steps.pm_cache_restore.outcome }}
+          SHARED_CI_CACHE_HIT: ${{ steps.pm_cache_restore.outputs.cache-hit }}
+        with:
+          phase: install
+
+      - name: Save package-manager cache
+        id: pm_cache_save
+        if: ${{ steps.pm_install.outcome == 'success' && steps.pm_cache_restore.outcome == 'success' && steps.pm_cache_restore.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pm_prepare.outputs.cache-path }}
+          key: ${{ steps.pm_prepare.outputs.cache-key }}
+
+      - name: Run capabilities
+        uses: $/.github/actions/node-ci
+        with:
+          phase: capabilities
+
+      - name: Write Shared CI summary
+        if: ${{ always() }}
+        continue-on-error: true
+        uses: $/.github/actions/node-ci
+        env:
+          SHARED_CI_SETUP_NODE_OUTCOME: ${{ steps.setup_node.outcome }}
+          SHARED_CI_CACHE_SAVE_OUTCOME: ${{ steps.pm_cache_save.outcome }}
+        with:
+          phase: finalize

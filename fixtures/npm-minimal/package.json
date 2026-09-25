@@ -1,0 +1,6 @@
+{
+  "name": "fixture-npm-minimal",
+  "scripts": {
+    "test": "node test.js"
+  }
+}

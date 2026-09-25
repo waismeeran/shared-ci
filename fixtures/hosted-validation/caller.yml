@@ -1,0 +1,39 @@
+# Copy into a separate consumer repository. Replace OWNER and REVISION only
+# after the Shared CI repository and candidate revision are published.
+name: Shared CI hosted validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      case:
+        description: Case from fixtures/hosted-validation/cases.json
+        required: true
+        type: choice
+        options:
+          - npm-conventional
+          - npm-node22
+          - npm-node26
+          - pnpm-conventional
+          - yarn4-conventional
+          - custom-overrides
+          - nested-working-directory
+          - e2e-enabled
+          - invalid-config
+          - capability-failure
+          - npm-cache-invalidation-before
+          - npm-cache-invalidation-after
+
+permissions:
+  contents: read
+
+jobs:
+  shared-ci:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@REVISION
+    with:
+      node-version: ${{ inputs.case == 'npm-node22' && '22' || inputs.case == 'npm-node26' && '26' || inputs.case == 'npm-conventional' && '24' || 'auto' }}
+      working-directory: ${{ inputs.case == 'npm-conventional' && 'fixtures/npm-full' || inputs.case == 'npm-node22' && 'fixtures/npm-full' || inputs.case == 'npm-node26' && 'fixtures/npm-full' || inputs.case == 'pnpm-conventional' && 'fixtures/pnpm' || inputs.case == 'yarn4-conventional' && 'fixtures/yarn' || inputs.case == 'custom-overrides' && 'fixtures/custom-commands' || inputs.case == 'nested-working-directory' && 'fixtures/nested-working-directory/app' || inputs.case == 'e2e-enabled' && 'fixtures/e2e-consumer' || inputs.case == 'invalid-config' && 'fixtures/missing-capabilities' || inputs.case == 'npm-cache-invalidation-before' && 'fixtures/cache-invalidation/before' || inputs.case == 'npm-cache-invalidation-after' && 'fixtures/cache-invalidation/after' || 'fixtures/capability-failure' }}
+      unit: ${{ inputs.case == 'invalid-config' && 'true' || 'auto' }}
+      e2e: ${{ inputs.case == 'e2e-enabled' && 'true' || 'false' }}
+      lint-command: ${{ inputs.case == 'custom-overrides' && 'npm run check:lint' || '' }}
+      unit-command: ${{ inputs.case == 'custom-overrides' && 'npm run tests' || '' }}
+      build-command: ${{ inputs.case == 'custom-overrides' && 'npm run compile:production' || '' }}

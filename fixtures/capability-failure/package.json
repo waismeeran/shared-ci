@@ -1,0 +1,10 @@
+{
+  "name": "fixture-capability-failure",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "node check.mjs lint",
+    "test:unit": "node check.mjs unit",
+    "build": "node check.mjs build"
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "workflow": ".github/workflows/node-ci.yml",
+  "cacheValidation": {
+    "cycles": [
+      { "manager": "npm", "caseId": "npm-conventional", "expected": ["MISS", "HIT"] },
+      { "manager": "pnpm", "caseId": "pnpm-conventional", "expected": ["MISS", "HIT"] },
+      { "manager": "yarn", "caseId": "yarn4-conventional", "expected": ["MISS", "HIT"] },
+      { "manager": "npm", "caseId": "nested-working-directory", "expected": ["MISS", "HIT"] }
+    ],
+    "lockfileInvalidation": {
+      "beforeCaseId": "npm-cache-invalidation-before",
+      "afterCaseId": "npm-cache-invalidation-after",
+      "expected": ["MISS", "MISS"],
+      "assertion": "The after lockfile has different content and therefore a different exact key."
+    }
+  },
+  "cases": [
+    {
+      "id": "npm-conventional",
+      "fixture": "fixtures/npm-full",
+      "inputs": { "node-version": "24", "working-directory": "fixtures/npm-full" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "DETECTED/PASSED",
+        "typecheck": "DETECTED/PASSED",
+        "unit": "DETECTED/PASSED",
+        "integration": "DETECTED/PASSED",
+        "build": "DETECTED/PASSED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; npm ci completed; conventional commands reported"
+    },
+    {
+      "id": "npm-node22",
+      "fixture": "fixtures/npm-full",
+      "inputs": { "node-version": "22", "working-directory": "fixtures/npm-full" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "DETECTED/PASSED",
+        "typecheck": "DETECTED/PASSED",
+        "unit": "DETECTED/PASSED",
+        "integration": "DETECTED/PASSED",
+        "build": "DETECTED/PASSED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; supported alternate Node 22 selector and npm ci"
+    },
+    {
+      "id": "npm-node26",
+      "fixture": "fixtures/npm-full",
+      "inputs": { "node-version": "26", "working-directory": "fixtures/npm-full" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "DETECTED/PASSED",
+        "typecheck": "DETECTED/PASSED",
+        "unit": "DETECTED/PASSED",
+        "integration": "DETECTED/PASSED",
+        "build": "DETECTED/PASSED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; supported alternate Node 26 selector and npm ci"
+    },
+    {
+      "id": "pnpm-conventional",
+      "fixture": "fixtures/pnpm",
+      "inputs": { "working-directory": "fixtures/pnpm" },
+      "expectedConclusion": "success",
+      "manager": "pnpm",
+      "capabilities": {
+        "lint": "ABSENT/SKIPPED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "ABSENT/SKIPPED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "DETECTED/PASSED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; pinned Corepack and pnpm; frozen install"
+    },
+    {
+      "id": "yarn4-conventional",
+      "fixture": "fixtures/yarn",
+      "inputs": { "working-directory": "fixtures/yarn" },
+      "expectedConclusion": "success",
+      "manager": "yarn",
+      "capabilities": {
+        "lint": "DETECTED/PASSED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "ABSENT/SKIPPED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "ABSENT/SKIPPED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; pinned Corepack and Yarn 4; immutable install"
+    },
+    {
+      "id": "custom-overrides",
+      "fixture": "fixtures/custom-commands",
+      "inputs": {
+        "working-directory": "fixtures/custom-commands",
+        "lint-command": "npm run check:lint",
+        "unit-command": "npm run tests",
+        "build-command": "npm run compile:production"
+      },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "OVERRIDDEN/PASSED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "OVERRIDDEN/PASSED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "OVERRIDDEN/PASSED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; overrides unchanged and reported OVERRIDDEN"
+    },
+    {
+      "id": "nested-working-directory",
+      "fixture": "fixtures/nested-working-directory/app",
+      "inputs": { "working-directory": "fixtures/nested-working-directory/app" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "DETECTED/PASSED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "DETECTED/PASSED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "DETECTED/PASSED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; project root app used for discovery, setup, install, commands and summary"
+    },
+    {
+      "id": "e2e-enabled",
+      "fixture": "fixtures/e2e-consumer",
+      "inputs": { "e2e": "true", "working-directory": "fixtures/e2e-consumer" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "ABSENT/SKIPPED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "ABSENT/SKIPPED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "ABSENT/SKIPPED",
+        "e2e": "DETECTED/PASSED"
+      },
+      "summary": "PASS; E2E ran after install with no browser or service setup"
+    },
+    {
+      "id": "invalid-config",
+      "fixture": "fixtures/missing-capabilities",
+      "inputs": { "unit": "true", "working-directory": "fixtures/missing-capabilities" },
+      "expectedConclusion": "failure",
+      "expectedValidation": "PASS",
+      "manager": "npm",
+      "capabilities": { "unit": "NOT_RESOLVED/NOT_EXECUTED" },
+      "summary": "FAIL; REQUIRED_CAPABILITY_MISSING; no capability reports PASSED"
+    },
+    {
+      "id": "capability-failure",
+      "fixture": "fixtures/capability-failure",
+      "inputs": { "working-directory": "fixtures/capability-failure" },
+      "expectedConclusion": "failure",
+      "expectedValidation": "PASS",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "DETECTED/FAILED",
+        "unit": "DETECTED/PASSED",
+        "build": "DETECTED/SKIPPED:PREREQUISITE_FAILED"
+      },
+      "summary": "FAIL; independent check result retained and gated work explains prerequisite failure"
+    },
+    {
+      "id": "npm-cache-invalidation-before",
+      "fixture": "fixtures/cache-invalidation/before",
+      "inputs": { "working-directory": "fixtures/cache-invalidation/before" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "ABSENT/SKIPPED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "ABSENT/SKIPPED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "ABSENT/SKIPPED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; baseline lockfile cache key is created on miss"
+    },
+    {
+      "id": "npm-cache-invalidation-after",
+      "fixture": "fixtures/cache-invalidation/after",
+      "inputs": { "working-directory": "fixtures/cache-invalidation/after" },
+      "expectedConclusion": "success",
+      "manager": "npm",
+      "capabilities": {
+        "lint": "ABSENT/SKIPPED",
+        "typecheck": "ABSENT/SKIPPED",
+        "unit": "ABSENT/SKIPPED",
+        "integration": "ABSENT/SKIPPED",
+        "build": "ABSENT/SKIPPED",
+        "e2e": "DISABLED/SKIPPED"
+      },
+      "summary": "PASS; changed lockfile content selects a distinct key and misses"
+    }
+  ]
+}

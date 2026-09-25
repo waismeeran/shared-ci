@@ -1,0 +1,32 @@
+# Dependencies and generated output
+node_modules/
+dist/
+!.github/actions/node-ci/dist/
+coverage/
+*.tsbuildinfo
+
+# Package manager and tool caches
+.npm/
+.pnpm-store/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+*.tmp
+tmp/
+temp/
+shared-ci-action-state.json
+
+# Internal research input; do not include in the public product repository.
+docs/research/current-organisation-ci-analysis.md
+
+# Editor and operating system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo

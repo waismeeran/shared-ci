@@ -1,0 +1,16 @@
+# Keep existing script names and map them through command overrides.
+name: Legacy CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      lint-command: npm run check:lint
+      unit-command: npm run tests
+      build-command: npm run compile:production

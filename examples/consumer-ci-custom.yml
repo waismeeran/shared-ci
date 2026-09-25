@@ -1,0 +1,20 @@
+# Adoption example showing project root, runtime, manager, and a legacy command.
+# OWNER/shared-ci is a placeholder; this file is not executable in this repository.
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: OWNER/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      node-version: '22'
+      package-manager: pnpm
+      working-directory: packages/service
+      typecheck: 'true'
+      unit: 'true'
+      unit-command: pnpm run test:ci

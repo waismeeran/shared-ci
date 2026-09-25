@@ -1,0 +1,3 @@
+# Fixtures
+
+Metadata-only projects exercise pure discovery and configuration tests. Standalone consumers under `npm-full`, `pnpm`, `yarn`, `custom-commands`, `e2e-consumer` and `nested-working-directory/app` model real package manifests and lockfiles. `cache-invalidation/before` and `after` use valid npm lockfiles with different content for the future hosted invalidation case. `hosted-validation/cases.json` specifies expected results when an independent GitHub caller can run them. `execution/` contains small command-adapter fixtures. No fixture requires a private registry, secret, browser, service or database.

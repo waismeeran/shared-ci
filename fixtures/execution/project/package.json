@@ -1,0 +1,7 @@
+{
+  "name": "execution-project",
+  "scripts": {
+    "test": "node ../success.mjs",
+    "build": "node ../mixed-output.mjs"
+  }
+}
