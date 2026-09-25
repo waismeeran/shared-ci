@@ -4,7 +4,7 @@ Reusable GitHub Actions CI orchestration for Node.js and TypeScript projects, de
 
 ## Status
 
-Shared CI is under development. The first reusable workflow and its version-aligned adapter are implemented in this repository, but have not been published as a release or validated from an external caller. Do not adopt the placeholder examples until a release is available.
+Shared CI is under development. The first candidate is published and an independent npm workflow has passed its install and capability baseline. The hosted matrix is still in progress, so do not adopt the placeholder examples until a release is available.
 
 ## Why Shared CI?
 
@@ -27,7 +27,7 @@ The public input contract is implemented by the current reusable workflow and do
 
 E2E is opt-in and defaults to `false`; `test:e2e` does not run unless enabled with `e2e: 'true'`. Consumers provide browsers, servers, services, databases, credentials and other E2E needs. Start with the [minimal example](examples/consumer-ci.yml), or see [frontend](examples/consumer-ci-frontend.yml), [backend](examples/consumer-ci-backend.yml), [legacy command](examples/consumer-ci-legacy.yml) and [E2E](examples/consumer-ci-e2e.yml) examples. Replace the documented `OWNER` placeholder with the actual repository owner. Stable consumers should use `@v1`, a fixed `@v1.x.y`, or a full commit SHA; do not use `@main` or `@master`.
 
-V1 currently targets Node 22, 24 and 26 on Ubuntu latest, subject to the exact selector and Corepack minimums in the [support policy](docs/support-policy.md). npm, pnpm and Yarn 4 are supported. Shared CI automatically caches each manager's package/download store using the selected lockfile. It never caches `node_modules`; `npm ci`, `pnpm install --frozen-lockfile` or `yarn install --immutable` still runs on every cache hit. Cache behavior is locally validated; GitHub-hosted cache and workflow validation remain pending. See [integration validation](docs/github-integration-validation.md).
+V1 targets Node 22, 24 and 26 on Ubuntu latest, subject to the exact selector and Corepack minimums in the [support policy](docs/support-policy.md). npm, pnpm and Yarn 4 are the intended package managers. Shared CI is designed to cache each manager's package/download store using the selected lockfile; it never caches `node_modules`, and immutable installation is intended to run on every cache hit. Cache behavior is locally validated; full GitHub-hosted workflow and cache validation remain pending. See [integration validation](docs/github-integration-validation.md).
 
 ## Non-goals
 

@@ -10,7 +10,8 @@ export function applyCacheRestoreOutcome(
   if (current.status === 'UNAVAILABLE' || current.status === 'NOT_REACHED')
     return { state: current };
   if (outcome === 'success' && cacheHit === 'true') return { state: { ...current, status: 'HIT' } };
-  if (outcome === 'success' && cacheHit === 'false')
+  // actions/cache/restore leaves cache-hit empty on a cache miss; only exact hits are "true".
+  if (outcome === 'success' && cacheHit !== 'true')
     return { state: { ...current, status: 'MISS' } };
   if (outcome === 'failure')
     return {

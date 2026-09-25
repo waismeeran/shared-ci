@@ -9,5 +9,8 @@
     "test:integration": "node check.mjs integration",
     "build": "node check.mjs build",
     "test:e2e": "node check.mjs e2e"
+  },
+  "dependencies": {
+    "is-number": "7.0.0"
   }
 }

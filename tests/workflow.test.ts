@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { readActionInputs, toCiConfig } from '../src/workflow/inputs.js';
+import { inspectProject } from '../src/discovery/project.js';
 import { validateConfig } from '../src/config/validation.js';
 
 const workflowPath = new URL('../.github/workflows/node-ci.yml', import.meta.url);
@@ -47,6 +49,19 @@ describe('workflow input adapter', () => {
     expect(toCiConfig({ 'working-directory': '' })['working-directory']).toBe('.');
     expect(toCiConfig({ 'working-directory': '.' })['working-directory']).toBe('.');
     expect(toCiConfig({ 'working-directory': 'app' })['working-directory']).toBe('app');
+  });
+
+  it('discovers the repository-root package manifest for an empty action input', async () => {
+    const fixtureRoot = fileURLToPath(new URL('../fixtures/npm-full', import.meta.url));
+    const result = await inspectProject(fixtureRoot, toCiConfig({ 'working-directory': '' }));
+
+    expect(result, JSON.stringify(result)).toMatchObject({
+      ok: true,
+      value: {
+        project: { workingDirectory: '.' },
+        packageManager: { name: 'npm', lockfile: 'package-lock.json' },
+      },
+    });
   });
 
   it('preserves explicit environment values, modes, and commands', () => {

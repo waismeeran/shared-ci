@@ -3,5 +3,8 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "build": "node build.js"
+  },
+  "devDependencies": {
+    "is-number": "7.0.0"
   }
 }

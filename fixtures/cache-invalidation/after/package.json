@@ -1,5 +1,8 @@
 {
   "name": "fixture-cache-invalidation",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "is-number": "7.0.0"
+  }
 }

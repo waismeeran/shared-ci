@@ -108,14 +108,37 @@ describe('Milestone 8 repository contracts', () => {
     for (const cycle of manifest.cacheValidation.cycles) {
       expect(cycle.expected).toEqual(['MISS', 'HIT']);
       expect(manifest.cases.some((item) => item.id === cycle.caseId)).toBe(true);
+      const cacheCase = manifest.cases.find((item) => item.id === cycle.caseId)!;
+      const packageJson = JSON.parse(
+        readFileSync(path.join(root, cacheCase.fixture, 'package.json'), 'utf8'),
+      ) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+      expect(
+        Object.keys({ ...packageJson.dependencies, ...packageJson.devDependencies }),
+        `${cycle.caseId} must contain a package so hosted cache paths contain cache data`,
+      ).not.toHaveLength(0);
     }
     expect(manifest.cacheValidation.lockfileInvalidation).toMatchObject({
       beforeCaseId: 'npm-cache-invalidation-before',
       afterCaseId: 'npm-cache-invalidation-after',
       expected: ['MISS', 'MISS'],
     });
+    for (const caseId of [
+      manifest.cacheValidation.lockfileInvalidation.beforeCaseId,
+      manifest.cacheValidation.lockfileInvalidation.afterCaseId,
+    ]) {
+      const cacheCase = manifest.cases.find((item) => item.id === caseId)!;
+      const packageJson = JSON.parse(
+        readFileSync(path.join(root, cacheCase.fixture, 'package.json'), 'utf8'),
+      ) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+      expect(
+        Object.keys({ ...packageJson.dependencies, ...packageJson.devDependencies }),
+      ).not.toHaveLength(0);
+    }
     const caller = readFileSync(path.join(root, 'fixtures/hosted-validation/caller.yml'), 'utf8');
     for (const item of manifest.cases) expect(caller).toContain(`- ${item.id}`);
+    expect(caller).toMatch(/working-directory: \$\{\{ inputs\.working_directory \}\}/);
+    expect(caller).toMatch(/node-version: \$\{\{ inputs\.node_version \}\}/);
+    expect(caller).not.toMatch(/^\s{6}working_directory: \$\{\{ inputs\./m);
   });
 
   it('resolves all local Markdown links in user-facing repository docs', () => {

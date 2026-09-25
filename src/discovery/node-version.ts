@@ -28,7 +28,7 @@ export function resolveNodeVersion(evidence: NodeVersionEvidence): Resolution<Re
     }
     return true;
   });
-  const explicit = evidence.explicit;
+  const explicit = evidence.explicit === 'auto' ? undefined : evidence.explicit;
   if (explicit !== undefined && !/^\d+(?:\.\d+){0,2}$/.test(explicit.trim()))
     diagnostics.push({
       code: 'INVALID_NODE_VERSION',

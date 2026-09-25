@@ -234,6 +234,7 @@ describe('summary model and Markdown renderer', () => {
     };
     expect(applyCacheRestoreOutcome(planned, 'success', 'true').state.status).toBe('HIT');
     expect(applyCacheRestoreOutcome(planned, 'success', 'false').state.status).toBe('MISS');
+    expect(applyCacheRestoreOutcome(planned, 'success', '').state.status).toBe('MISS');
     expect(applyCacheRestoreOutcome(planned, 'failure', undefined)).toMatchObject({
       state: { status: 'UNAVAILABLE' },
       warning: { severity: 'warning', code: 'PACKAGE_CACHE_RESTORE_UNAVAILABLE' },
