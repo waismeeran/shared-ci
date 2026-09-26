@@ -21,8 +21,8 @@ tmp/
 temp/
 shared-ci-action-state.json
 
-# Internal research input; do not include in the public product repository.
-docs/research/current-organisation-ci-analysis.md
+# Local/private planning and research materials.
+/docs/
 
 # Editor and operating system files
 .DS_Store

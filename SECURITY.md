@@ -1,11 +1,16 @@
 # Security policy
 
-Shared CI V1.0.0 is released. Security properties and supported configurations are described in the [consumer contract](docs/consumer-contract.md) and [support policy](docs/support-policy.md).
-
 ## Reporting a vulnerability
 
-Please use GitHub's private vulnerability reporting option on this repository if it is enabled; otherwise contact the repository maintainer privately before disclosing details. Do not include secrets or sensitive consumer data in public issues.
+Use GitHub's private vulnerability reporting for this repository if available. Otherwise contact the maintainer privately before disclosing details. Do not include secrets or sensitive consumer data in public issues.
 
-## Security principles
+## Workflow security model
 
-The reusable workflow and its caller examples use least-privilege `contents: read`. No secrets are inherited or required, and Shared CI grants no write, OIDC or deployment permissions. External actions in the reusable workflow are pinned to full commit SHAs and documented with their release versions. Consumer commands are configuration controlled by the consumer; workflow event text is not used to construct shell commands. Callers should use appropriate triggers and must not invoke this workflow with `pull_request_target` for untrusted code. See [the consumer contract](docs/consumer-contract.md) for the trust boundary, [integration validation](docs/github-integration-validation.md) for hosted evidence, and [troubleshooting](docs/troubleshooting.md) for typed failure diagnostics.
+The reusable job and caller examples request only `contents: read`. Shared CI does not inherit secrets or request repository write, package write, Actions write, OIDC, or deployment permissions. Consumer commands are selected from repository configuration; workflow event text is not used to construct shell commands. External actions in the reusable workflow are pinned to these full commit SHAs:
+
+- `actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1` (v7.0.1)
+- `actions/setup-node@820762786026740c76f36085b0efc47a31fe5020` (v7.0.0)
+- `actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9` (v6.1.0)
+- `actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9` (v6.1.0)
+
+Callers control workflow triggers and should not use `pull_request_target` to execute untrusted pull-request code. Consumers remain responsible for their own secrets, dependencies, and test infrastructure.

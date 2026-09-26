@@ -23,7 +23,7 @@ function publicInputs(): Set<string> {
 describe('Milestone 8 repository contracts', () => {
   it('keeps every example with-key in the shipped reusable workflow input contract', () => {
     const allowed = publicInputs();
-    const reference = readFileSync(path.join(root, 'docs/consumer-contract.md'), 'utf8');
+    const reference = readFileSync(path.join(root, 'README.md'), 'utf8');
     expect(reference).not.toMatch(/\|\s*timeout(?:-minutes)?\s*\|/i);
     for (const input of allowed)
       expect(reference, `contract reference missing ${input}`).toContain(`\`${input}\``);
@@ -146,7 +146,6 @@ describe('Milestone 8 repository contracts', () => {
       path.join(root, 'README.md'),
       path.join(root, 'CONTRIBUTING.md'),
       path.join(root, 'SECURITY.md'),
-      ...walk(path.join(root, 'docs')).filter((file) => file.endsWith('.md')),
       ...walk(path.join(root, 'examples')).filter((file) => file.endsWith('.md')),
     ];
     for (const file of markdown) {
@@ -163,13 +162,12 @@ describe('Milestone 8 repository contracts', () => {
     }
   });
 
-  it('records actual source diagnostic identifiers in the troubleshooting reference', () => {
-    const guide = readFileSync(path.join(root, 'docs/troubleshooting.md'), 'utf8');
-    const source = [...walk(path.join(root, 'src')), ...walk(path.join(root, 'scripts'))]
-      .filter((file) => file.endsWith('.ts'))
-      .map((file) => readFileSync(file, 'utf8'))
-      .join('\n');
-    const codes = [...guide.matchAll(/`([A-Z][A-Z0-9_]+)`/g)].map((match) => match[1]!);
-    for (const code of codes) expect(source, `${code} absent from source`).toContain(`'${code}'`);
+  it('documents the distinction between discovered capabilities and execution outcomes', () => {
+    const readme = readFileSync(path.join(root, 'README.md'), 'utf8');
+    for (const state of ['DETECTED', 'OVERRIDDEN', 'ABSENT', 'DISABLED'])
+      expect(readme).toContain(`\`${state}\``);
+    for (const state of ['PASSED', 'FAILED', 'TIMED_OUT', 'SKIPPED'])
+      expect(readme).toContain(`\`${state}\``);
+    expect(readme).toMatch(/absent or disabled capability is not a successful execution/i);
   });
 });
