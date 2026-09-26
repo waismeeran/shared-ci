@@ -4,7 +4,7 @@ Reusable GitHub Actions CI orchestration for Node.js and TypeScript projects, de
 
 ## Status
 
-Shared CI is under development. Candidate D is published and an independent GitHub-hosted matrix has validated npm on Node 22/24/26, pnpm, Yarn 4, custom commands, nested projects, E2E, expected failures, and several cache behaviors. Candidate D npm and pnpm miss/save cycles and the remaining milestone acceptance evidence are still in progress. Do not treat these results as a stable release.
+Shared CI V1 is released as `v1.0.0`. Use `@v1` for normal adoption, `@v1.0.0` to pin this concrete release, or a full commit SHA for the strongest immutability. The release is based on hosted-validated executable commit `cafba3a58415f84390c92085b85b61908b00c6cf`; see the [integration evidence](docs/github-integration-validation.md) and [release process](docs/releasing.md).
 
 ## Why Shared CI?
 
@@ -19,7 +19,7 @@ Repositories duplicate CI workflow maintenance, use inconsistent conventions, an
 - The public workflow API stays small and explicit.
 - Consumer repositories own application behavior, tool configuration, dependencies, secrets and E2E infrastructure.
 
-## V1 scope under development
+## V1 scope
 
 Node.js/TypeScript projects, npm, pnpm and Yarn 4, a reusable workflow, six optional-by-default CI capabilities with explicit overrides and requirements, deterministic runtime/package-manager setup, immutable installation, a single sequential job, and a GitHub Actions summary. See the [support policy](docs/support-policy.md) for the planned tested matrix.
 
@@ -27,7 +27,17 @@ The public input contract is implemented by the current reusable workflow and do
 
 E2E is opt-in and defaults to `false`; `test:e2e` does not run unless enabled with `e2e: 'true'`. Consumers provide browsers, servers, services, databases, credentials and other E2E needs. Start with the [minimal example](examples/consumer-ci.yml), or see [frontend](examples/consumer-ci-frontend.yml), [backend](examples/consumer-ci-backend.yml), [legacy command](examples/consumer-ci-legacy.yml) and [E2E](examples/consumer-ci-e2e.yml) examples. Replace the documented `OWNER` placeholder with the actual repository owner. Stable consumers should use `@v1`, a fixed `@v1.x.y`, or a full commit SHA; do not use `@main` or `@master`.
 
-V1 targets Node 22, 24 and 26 on Ubuntu latest, subject to the exact selector and Corepack minimums in the [support policy](docs/support-policy.md). npm, pnpm and Yarn 4 are the intended package managers. Shared CI caches each manager's package/download store using the selected lockfile; it never caches `node_modules`, and immutable installation has passed on hosted cache hits. The full GitHub-hosted matrix is still in progress. See [integration validation](docs/github-integration-validation.md).
+V1 supports the hosted-validated Node 22, 24 and 26 matrix on Ubuntu latest, subject to exact selector and Corepack minimums in the [support policy](docs/support-policy.md). npm, pnpm and Yarn 4 are supported. Shared CI caches each manager's package/download store using the selected lockfile; it never caches `node_modules`, and immutable installation runs on cache hits. See [integration validation](docs/github-integration-validation.md).
+
+Consumers can use the maintained major, concrete release, or full SHA:
+
+```yaml
+uses: waismeeran/shared-ci/.github/workflows/node-ci.yml@v1
+# Or pin this release: ...@v1.0.0
+# For strongest immutability: ...@<full-SHA>
+```
+
+Do not use `@main` as the production consumer contract. See [release and rollback guidance](docs/releasing.md).
 
 ## Non-goals
 
