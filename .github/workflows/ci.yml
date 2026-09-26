@@ -12,6 +12,7 @@ jobs:
   ci:
     uses: waismeeran/shared-ci/.github/workflows/node-ci.yml@v1
     with:
+      node-version: '24'
       lint: 'true'
       typecheck: 'true'
       unit: 'true'
