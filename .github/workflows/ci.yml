@@ -1,0 +1,17 @@
+name: Shared CI dogfood
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: waismeeran/shared-ci/.github/workflows/node-ci.yml@v1
+    with:
+      lint: 'true'
+      typecheck: 'true'
+      unit: 'true'
